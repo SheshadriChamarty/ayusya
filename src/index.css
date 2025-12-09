@@ -1,0 +1,192 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 60 30% 96%;
+    --foreground: 20 12% 16%;
+
+    --card: 60 30% 98%;
+    --card-foreground: 20 12% 16%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 20 12% 16%;
+
+    --primary: 124 28% 50%;
+    --primary-foreground: 355 100% 100%;
+
+    --secondary: 60 20% 92%;
+    --secondary-foreground: 24 9% 22%;
+
+    --muted: 60 15% 92%;
+    --muted-foreground: 25 5% 45%;
+
+    --accent: 84 46% 90%;
+    --accent-foreground: 24 9% 22%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 355 100% 100%;
+
+    --border: 20 5% 90%;
+    --input: 20 5% 90%;
+    --ring: 124 28% 50%;
+
+    --radius: 0.75rem;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans;
+    overflow-x: hidden;
+  }
+
+  /* Enhanced scroll behavior */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Custom utility classes */
+  .section-padding {
+    @apply py-16 px-4 md:py-24 md:px-6 lg:px-8;
+  }
+  
+  .heading-xl {
+    @apply text-3xl md:text-4xl lg:text-5xl font-serif font-medium leading-tight;
+  }
+  
+  .heading-lg {
+    @apply text-2xl md:text-3xl font-serif font-medium leading-tight;
+  }
+  
+  .heading-md {
+    @apply text-xl md:text-2xl font-serif font-medium leading-tight;
+  }
+  
+  .paragraph {
+    @apply text-base md:text-lg leading-relaxed;
+  }
+  
+  /* Enhanced button classes with animations */
+  .ayusya-btn {
+    @apply px-6 py-3 rounded-full bg-ayusya-green text-white hover:bg-opacity-90 transition-all duration-300 inline-flex items-center justify-center space-x-2 font-medium hover:shadow-md hover:translate-y-[-2px];
+  }
+  
+  .ayusya-btn-outline {
+    @apply px-6 py-3 rounded-full border-2 border-ayusya-green text-ayusya-green hover:bg-ayusya-green hover:text-white transition-all duration-300 inline-flex items-center justify-center space-x-2 font-medium hover:shadow-md hover:translate-y-[-2px];
+  }
+  
+  .img-wrapper {
+    @apply overflow-hidden rounded-2xl;
+  }
+  
+  /* Enhanced product card styling with animations */
+  .product-card {
+    @apply bg-white rounded-2xl overflow-hidden shadow-md transition-all duration-300;
+  }
+  
+  .section-title {
+    @apply relative inline-block pb-3 mb-8;
+  }
+  
+  .section-title:after {
+    content: '';
+    @apply absolute bottom-0 left-0 w-1/3 h-0.5 bg-ayusya-green;
+  }
+
+  /* Animation classes for buttons and links */
+  .btn-hover-effect {
+    @apply relative overflow-hidden;
+  }
+
+  .btn-hover-effect:after {
+    content: '';
+    @apply absolute top-0 left-0 w-full h-full bg-white opacity-0 transition-opacity duration-300;
+  }
+
+  .btn-hover-effect:hover:after {
+    @apply opacity-20;
+  }
+
+  /* Ripple effect for buttons */
+  .ripple {
+    @apply relative overflow-hidden;
+  }
+
+  .ripple:after {
+    content: '';
+    @apply absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-0 h-0 bg-white rounded-full opacity-70 transition-all duration-500;
+  }
+
+  .ripple:active:after {
+    @apply w-[300%] h-[300%] opacity-0;
+  }
+
+  /* Animation for stagger children */
+  @for $i from 1 to 10 {
+    .stagger-children > *:nth-child(#{$i}) {
+      animation-delay: calc(#{$i} * 100ms);
+    }
+  }
+
+  /* Image hover effects */
+  .img-hover-zoom {
+    @apply overflow-hidden;
+  }
+
+  .img-hover-zoom img {
+    @apply transition-transform duration-700;
+  }
+
+  .img-hover-zoom:hover img {
+    @apply scale-110;
+  }
+
+  /* Scroll indicator animation */
+  .scroll-indicator {
+    @apply absolute bottom-8 left-1/2 transform -translate-x-1/2 w-6 h-10 border-2 border-ayusya-green rounded-full flex items-start justify-center;
+  }
+
+  .scroll-indicator:after {
+    content: '';
+    @apply w-1.5 h-1.5 bg-ayusya-green rounded-full mt-2 animate-bounce;
+  }
+}
+
+/* Enhanced animations */
+@keyframes scale-in-center {
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-scale-in {
+  animation: scale-in-center 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+/* Shimmer loading effect */
+.shimmer {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
