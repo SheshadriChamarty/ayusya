@@ -21,8 +21,9 @@ import {
  * The contact block.
  *
  * WhatsApp is listed first and styled as the primary route on purpose: it is the
- * only channel that converts here, since there is no cart and no checkout. The
- * other four exist so the business looks reachable, not because they are equal.
+ * only channel that converts here, since there is no payment step on the site —
+ * even the product list checks out into a WhatsApp message. The other four exist
+ * so the business looks reachable, not because they are equal.
  *
  * This replaces the last of the four grey "Placeholder Visual" boxes and the last
  * of the `ayusya-*` bridge classes — the migration alias block in
@@ -80,7 +81,7 @@ const ContactSection = () => (
           <Reveal>
             <p className="eyebrow mb-4">Talk to us</p>
             <h2 className="heading-lg max-w-xl">
-              There is no checkout here. There is a conversation.
+              Every order starts as a conversation.
             </h2>
           </Reveal>
 

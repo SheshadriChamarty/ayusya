@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Menu, MessageCircle, X } from "lucide-react";
 import { Link, NavLink, useLocation } from "react-router-dom";
+import CartButton from "./CartButton";
 import { whatsappUrl } from "@/lib/contact";
 import { cn } from "@/lib/utils";
 
@@ -97,6 +98,8 @@ const Navbar = () => {
             </NavLink>
           ))}
 
+          <CartButton />
+
           <a
             href={whatsappUrl()}
             target="_blank"
@@ -108,16 +111,24 @@ const Navbar = () => {
           </a>
         </div>
 
-        <button
-          type="button"
-          className="rounded-full p-2 text-bronze transition-colors hover:bg-cream-200 md:hidden"
-          onClick={() => setIsMenuOpen((prev) => !prev)}
-          aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-          aria-expanded={isMenuOpen}
-          aria-controls="mobile-menu"
-        >
-          {isMenuOpen ? <X size={22} /> : <Menu size={22} />}
-        </button>
+        {/* The basket sits outside the mobile menu as well as inside it. A
+            customer who has just added something should be able to reach their
+            list in one tap, not two — and the badge is the feedback that the add
+            landed, so it has to be visible without opening the menu. */}
+        <div className="flex items-center gap-1 md:hidden">
+          <CartButton />
+
+          <button
+            type="button"
+            className="rounded-full p-2 text-bronze transition-colors hover:bg-cream-200"
+            onClick={() => setIsMenuOpen((prev) => !prev)}
+            aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={isMenuOpen}
+            aria-controls="mobile-menu"
+          >
+            {isMenuOpen ? <X size={22} /> : <Menu size={22} />}
+          </button>
+        </div>
       </div>
 
       {isMenuOpen && (
@@ -143,11 +154,16 @@ const Navbar = () => {
                 {link.label}
               </NavLink>
             ))}
+            <CartButton
+              variant="full"
+              onOpen={() => setIsMenuOpen(false)}
+              className="mt-3"
+            />
             <a
               href={whatsappUrl()}
               target="_blank"
               rel="noreferrer noopener"
-              className="mt-3 inline-flex items-center justify-center gap-2 rounded-full bg-sku-moringa px-5 py-3.5 font-display text-base font-bold text-cream shadow-warm"
+              className="mt-2 inline-flex items-center justify-center gap-2 rounded-full bg-sku-moringa px-5 py-3.5 font-display text-base font-bold text-cream shadow-warm"
             >
               <MessageCircle size={16} aria-hidden="true" />
               Enquire on WhatsApp

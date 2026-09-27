@@ -53,9 +53,10 @@ const Farm = () => {
 
       <Reveal delay={0.1}>
         <p className="paragraph mt-7 max-w-xl">
-          Gudivada, in Krishna district, is farming country. The produce we dry is
-          grown within reach of the factory — which means it arrives hours after
-          it is cut, not days, and it is dried while it is still at its peak.
+          Gudivada sits in Krishna district, surrounded by farmland. The produce
+          we dry is grown within reach of the factory — which means it arrives
+          hours after it is cut, not days, and it is dried while it is still at
+          its peak.
         </p>
       </Reveal>
 

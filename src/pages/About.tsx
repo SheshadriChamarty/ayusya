@@ -102,10 +102,10 @@ const About = () => (
 
           <Reveal delay={0.1}>
             <p className="paragraph mt-7 max-w-2xl">
-              {COMPANY_NAME} is run from {ADDRESS_SHORT} — farming country in coastal
-              Andhra Pradesh, which is the whole reason the business works where it
-              is. The produce is grown within reach of the factory, so it is dried
-              while it is still at its peak rather than after a journey.
+              {COMPANY_NAME} is run from {ADDRESS_SHORT}, surrounded by the
+              farmland it buys from — which is the whole reason the business works
+              where it is. The produce is grown within reach of the factory, so it
+              is dried while it is still at its peak rather than after a journey.
             </p>
           </Reveal>
 

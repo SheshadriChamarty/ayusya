@@ -1,7 +1,10 @@
 import React, { useId, useState } from "react";
-import { ChevronDown, MessageCircle } from "lucide-react";
+import { ChevronDown, MessageCircle, Plus } from "lucide-react";
+import { toast } from "sonner";
 import IngredientGlyph from "./illustrations/IngredientGlyph";
+import QuantityStepper from "./QuantityStepper";
 import { Product } from "../data/productData";
+import { useCart } from "@/hooks/useCart";
 import { skuStyle } from "@/lib/skuAccents";
 import { whatsappUrl } from "@/lib/contact";
 import { cn } from "@/lib/utils";
@@ -27,6 +30,18 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const panelId = useId();
   const { accent } = skuStyle(product.name);
+  const { add, setQuantity, remove, quantityOf, setOpen } = useCart();
+  const quantity = quantityOf(product.name);
+
+  const handleAdd = () => {
+    add(product.name);
+    /* The toast carries the way to the list. Without it the only feedback is a
+       badge in the navbar, which on a phone is above the fold and easy to miss
+       while scrolling a grid. */
+    toast(`${product.name} added to your list`, {
+      action: { label: "View list", onClick: () => setOpen(true) },
+    });
+  };
 
   return (
     <article
@@ -134,6 +149,40 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             />
           </button>
 
+          {/* Two actions, not one. "Add to list" is primary because building a
+              list is the flow we want; the direct WhatsApp link stays because
+              some customers want to ask one question about one product rather
+              than place an order, and forcing them through a cart to do that
+              would be worse than the single button this replaces. */}
+          {quantity === 0 ? (
+            <button
+              type="button"
+              onClick={handleAdd}
+              className="ayusya-btn w-full px-5 py-3 text-sm"
+            >
+              <Plus size={16} aria-hidden="true" />
+              Add to list
+              <span className="sr-only">: {product.name}</span>
+            </button>
+          ) : (
+            /* Once listed, the button becomes the stepper in place. The count is
+               read from the cart rather than held locally, so the same card shows
+               the right number after a reload or a change made in the panel. */
+            <div className="flex items-center justify-between gap-3 rounded-full border border-sku bg-cream-100 px-3 py-2">
+              <span className="pl-1 font-display text-sm font-bold text-primary">
+                On your list
+              </span>
+              <QuantityStepper
+                name={product.name}
+                quantity={quantity}
+                size="sm"
+                onChange={(q) =>
+                  q < 1 ? remove(product.name) : setQuantity(product.name, q)
+                }
+              />
+            </div>
+          )}
+
           {/* A real anchor, not a button calling window.open: the enquiry
               survives middle-click, long-press and popup blockers, and screen
               readers announce it as the link it is. */}
@@ -141,11 +190,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             href={whatsappUrl(product.name)}
             target="_blank"
             rel="noreferrer noopener"
-            className="ayusya-btn w-full px-5 py-3 text-sm"
+            className="ayusya-btn-outline w-full px-5 py-2.5 text-sm"
           >
             <MessageCircle size={16} aria-hidden="true" />
-            Enquire on WhatsApp
-            <span className="sr-only"> about {product.name}</span>
+            Ask about this one
+            <span className="sr-only"> — {product.name}, on WhatsApp</span>
           </a>
         </div>
       </div>

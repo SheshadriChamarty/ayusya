@@ -30,9 +30,9 @@ interface ChapterCTAProps {
 }
 
 /**
- * Every chapter ends here. Ayusya has no cart, so a WhatsApp thread *is* the
- * conversion — which makes "no screen without a next step" a hard requirement
- * rather than a nicety.
+ * Every chapter ends here. Nothing is paid for on this site, so a WhatsApp thread
+ * *is* the conversion — which makes "no screen without a next step" a hard
+ * requirement rather than a nicety.
  */
 const ChapterCTA = ({
   lead = "products",

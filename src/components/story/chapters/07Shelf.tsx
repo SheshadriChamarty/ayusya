@@ -3,7 +3,7 @@ import Chapter from "../Chapter";
 import Reveal from "../Reveal";
 import IngredientGlyph from "@/components/illustrations/IngredientGlyph";
 import { productData } from "@/data/productData";
-import { skuStyle, ProductFamily } from "@/lib/skuAccents";
+import { skuStyle, FAMILY_LABELS, ProductFamily } from "@/lib/skuAccents";
 import { whatsappUrl } from "@/lib/contact";
 import CatalogueLink from "@/components/CatalogueLink";
 import { MessageCircle, ArrowRight } from "lucide-react";
@@ -11,17 +11,25 @@ import { MessageCircle, ArrowRight } from "lucide-react";
 /**
  * Chapter ⑦ — The Shelf. The invitation.
  *
- * The thread flattens into a shelf rule and the products sit on it. This is the
- * end of the narrative and the handoff to /products, so it is the one chapter
- * that shows actual SKUs rather than illustration.
+ * The thread flattens into a shelf rule, six powders sit on it, and the page
+ * hands off to /products. This is the end of the narrative, so the last thing on
+ * it is the next step rather than more information.
  *
- * The three category narrations below are the surviving copy from the old
- * ProductsSection.tsx, which was dead code (imported by nothing) but held the
- * best product writing in the repo. Its 26 per-product blurbs described a
- * partly different catalogue — carrot, beetroot, amla, cabbage, potato, capsicum
- * and fenugreek are written up there but are not among the 21 SKUs that actually
- * ship — so only the category-level writing is carried across. Per-product copy
- * comes from productData.ts, which is the real catalogue.
+ * ── Why this chapter is short ───────────────────────────────────────────────
+ * It used to render all 21 SKUs as three grids of tiles — 21 cards duplicating
+ * /products, on the tallest section of an already-long page, every one of them
+ * linking to the same place. A taster of six makes the same point (there are
+ * many, they are all one ingredient each) in a fifth of the height, and the
+ * catalogue is one tap away for anyone who wants the full list. Length was the
+ * complaint; this was where the length was.
+ *
+ * The three category narrations survive as prose because they are the best
+ * product writing in the repo — salvaged from the old ProductsSection.tsx, which
+ * was dead code but held copy nothing else replaced. Its 26 per-product blurbs
+ * described a partly different catalogue (carrot, beetroot, amla, cabbage,
+ * potato, capsicum and fenugreek are written up there but do not ship), so only
+ * the category-level writing was carried across.
+ * ────────────────────────────────────────────────────────────────────────────
  */
 
 interface Group {
@@ -51,6 +59,25 @@ const GROUPS: Group[] = [
   },
 ];
 
+/**
+ * Six powders standing in for twenty-one.
+ *
+ * Derived rather than hand-picked: one per family so the row shows the real
+ * spread of the catalogue, preferring a product the data already flags as
+ * popular or new, then topped up from the largest family. A hardcoded list of
+ * six names would quietly become wrong the first time a product is added or
+ * renamed.
+ */
+const TASTER = (() => {
+  const chosen = FAMILY_LABELS.map(({ value }) => {
+    const members = productData.filter((p) => skuStyle(p.name).family === value);
+    return members.find((p) => p.isPopular || p.isNew) ?? members[0];
+  }).filter(Boolean);
+
+  const fill = productData.filter((p) => !chosen.includes(p));
+  return [...chosen, ...fill].slice(0, 6);
+})();
+
 const Shelf = () => (
   <Chapter id="shelf" numeral="VII" eyebrow="The Shelf" tone="bg-cream-100">
     <Reveal>
@@ -64,50 +91,50 @@ const Shelf = () => (
       </p>
     </Reveal>
 
-    <div className="mt-14 space-y-12">
+    {/* The shelf rule the thread flattens into, with six powders standing on it. */}
+    <Reveal delay={0.14}>
+      <div className="mt-12 h-px w-full bg-gradient-to-r from-bronze-metallic/60 via-caramel/40 to-transparent" />
+
+      <ul className="mt-7 grid grid-cols-3 gap-x-4 gap-y-7 sm:grid-cols-6">
+        {TASTER.map((product) => (
+          <li key={product.id} className="text-center">
+            <IngredientGlyph
+              productName={product.name}
+              className="mx-auto h-12 w-12 md:h-14 md:w-14"
+            />
+            <span className="mt-2.5 block font-display text-xs font-semibold leading-tight text-primary md:text-sm">
+              {product.name.replace(" Powder", "")}
+            </span>
+          </li>
+        ))}
+      </ul>
+    </Reveal>
+
+    {/* The three groups as prose with counts, not as grids. The counts do the
+        work the tiles used to: they say how much is behind the link. */}
+    <div className="mt-12 space-y-7 border-t border-caramel/30 pt-10">
       {GROUPS.map((group, gi) => {
-        const items = productData.filter((p) =>
+        const count = productData.filter((p) =>
           group.family.includes(skuStyle(p.name).family)
-        );
+        ).length;
 
         return (
           <Reveal key={group.name} delay={gi * 0.06}>
-            <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
-              <h3 className="heading-md">{group.name}</h3>
-              <span className="text-sm font-semibold text-umber-light">
-                {items.length} products
-              </span>
+            <div className="max-w-2xl">
+              <h3 className="font-display text-lg font-bold text-primary md:text-xl">
+                {group.name}
+                {/* " · 6 products" spelled out rather than a bare numeral. The
+                    numeral alone read as "Daily superfood powders6" to anything
+                    consuming the text layer — a screen reader, or search. */}
+                <span className="ml-2 align-middle text-sm font-semibold text-umber-light">
+                  {" · "}
+                  {count} products
+                </span>
+              </h3>
+              <p className="mt-2 text-sm leading-relaxed text-umber md:text-base">
+                {group.narration}
+              </p>
             </div>
-            <p className="mt-3 max-w-2xl text-sm leading-relaxed text-umber md:text-base">
-              {group.narration}
-            </p>
-
-            {/* The shelf rule the thread flattens into. */}
-            <div className="mt-6 h-px w-full bg-gradient-to-r from-bronze-metallic/60 via-caramel/40 to-transparent" />
-
-            <ul className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-              {items.map((product) => {
-                const { accent } = skuStyle(product.name);
-                return (
-                  <li key={product.id}>
-                    <Link
-                      to="/products"
-                      style={{ ["--sku-accent" as string]: accent }}
-                      className="group flex h-full items-center gap-3 rounded-2xl border border-caramel/40 bg-cream-50 p-3.5
-                                 transition-all duration-300 hover:-translate-y-0.5 hover:border-sku hover:shadow-warm
-                                 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                    >
-                      <span className="h-9 w-9 shrink-0 md:h-10 md:w-10">
-                        <IngredientGlyph productName={product.name} />
-                      </span>
-                      <span className="font-display text-sm font-semibold leading-tight text-primary md:text-[0.95rem]">
-                        {product.name.replace(" Powder", "")}
-                      </span>
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
           </Reveal>
         );
       })}
@@ -136,8 +163,8 @@ const Shelf = () => (
         </p>
         <h3 className="heading-md mt-5">Start wherever you like.</h3>
         <p className="mx-auto mt-3 max-w-md text-sm text-bronze/80 md:text-base">
-          There is no cart and no checkout — tell us what you need on WhatsApp and
-          we will sort out the rest.
+          Build a list of what you need, send it on WhatsApp, and we will sort out
+          the rest.
         </p>
         <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
           <Link to="/products" className="ayusya-btn">

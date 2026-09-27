@@ -1,17 +1,23 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { MessageCircle, ShoppingBasket } from "lucide-react";
-import { whatsappUrl } from "@/lib/contact";
+import { useCart } from "@/hooks/useCart";
+import { whatsappCartUrl, whatsappUrl } from "@/lib/contact";
 import { cn } from "@/lib/utils";
 
 /**
- * Persistent route to the two things a visitor can actually do: see the range,
- * or start a WhatsApp enquiry.
+ * Persistent route to the things a visitor can actually do: see the range, send
+ * the list they have built, or start a WhatsApp enquiry from nothing.
  *
- * Ayusya has no cart, so there is no "checkout" moment to funnel toward — the
- * conversation IS the conversion. That makes a always-reachable rail more
- * valuable here than on a transactional store: whatever paragraph of the story
- * lands, the next step is one tap away.
+ * There is no payment step, so the conversation IS the conversion. That makes an
+ * always-reachable rail more valuable here than on a transactional store:
+ * whatever paragraph of the story lands, the next step is one tap away.
+ *
+ * Once the list has something on it, the rail becomes the checkout: the enquiry
+ * pill turns into "Send list (N)". Sending goes straight to wa.me rather than
+ * opening the panel first, which is safe because wa.me only *prefills* the
+ * message — the customer reads the whole list in WhatsApp's compose box and
+ * still has to press send. The review step exists by construction.
  *
  * Deliberately hidden at the very top of the page. The hero already carries
  * both CTAs, so showing the rail immediately would double them up and cover
@@ -20,6 +26,7 @@ import { cn } from "@/lib/utils";
 const CTARail = () => {
   const [isVisible, setIsVisible] = useState(false);
   const { pathname } = useLocation();
+  const { lines, count } = useCart();
   const isProductsPage = pathname === "/products";
 
   useEffect(() => {
@@ -40,8 +47,10 @@ const CTARail = () => {
         "transition-all duration-500 md:bottom-6 md:justify-end md:pr-6 lg:pr-10",
         /* Hidden on /products at md and up: there it collapses to a lone Enquire
            pill, which just duplicates the one already in the sticky navbar. On
-           mobile it stays, since the navbar's pill is behind the burger menu. */
-        isProductsPage && "md:hidden",
+           mobile it stays, since the navbar's pill is behind the burger menu.
+           But a non-empty list overrides that — "Send list" is not in the navbar,
+           and /products is exactly where a customer finishes building one. */
+        isProductsPage && count === 0 && "md:hidden",
         isVisible
           ? "translate-y-0 opacity-100"
           : "pointer-events-none translate-y-6 opacity-0"
@@ -69,13 +78,13 @@ const CTARail = () => {
         )}
 
         <a
-          href={whatsappUrl()}
+          href={count > 0 ? whatsappCartUrl(lines) : whatsappUrl()}
           target="_blank"
           rel="noreferrer noopener"
-          className="inline-flex flex-1 items-center justify-center gap-2 rounded-full bg-sku-moringa px-5 py-3 font-display text-sm font-semibold text-cream shadow-warm transition-transform duration-300 hover:-translate-y-0.5 active:scale-95 md:flex-none"
+          className="inline-flex flex-1 items-center justify-center gap-2 whitespace-nowrap rounded-full bg-sku-moringa px-5 py-3 font-display text-sm font-semibold text-cream shadow-warm transition-transform duration-300 hover:-translate-y-0.5 active:scale-95 md:flex-none"
         >
-          <MessageCircle size={17} aria-hidden="true" />
-          Enquire
+          <MessageCircle size={17} className="shrink-0" aria-hidden="true" />
+          {count > 0 ? `Send list (${count})` : "Enquire"}
         </a>
       </div>
     </div>

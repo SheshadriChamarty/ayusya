@@ -23,18 +23,28 @@ import { cn } from "@/lib/utils";
  *      hardcoded to `name.includes('banana')`. Mango, Apple, Papaya, Lemon,
  *      Pineapple and Jackfruit were all unreachable — six of 21 products.
  *      Now it matches the explicit `family` field in skuAccents.ts.
- *   2. Use case searched the `benefits[]` prose for the label, so "Bone Health"
- *      only matched products whose marketing copy happened to contain that exact
- *      phrase, while the purpose-built `categories[]` field went unused. Now it
- *      matches `categories[]`.
- *   3. "Most Popular" and "Newest First" both silently fell through to
+ *   2. "Most Popular" and "Newest First" both silently fell through to
  *      `b.id - a.id`, ignoring the `isPopular`/`isNew` flags that exist in the
  *      data. Now they honour the flags.
  *
  * Every option offered is *derived from the catalogue*, not hardcoded. That is
- * the structural fix behind all three: a filter list that cannot be typed by
- * hand cannot go stale when a product is added, and cannot offer a choice that
+ * the structural fix behind both: a filter list that cannot be typed by hand
+ * cannot go stale when a product is added, and cannot offer a choice that
  * matches nothing.
+ *
+ * ── Why Category is the only filter ─────────────────────────────────────────
+ * There were two more: "Use case" (Digestion, Immunity, Bone Health…) and
+ * "Who it's for" (Kids, Elderly, Expecting mothers…). Both are gone, and not
+ * because they were broken — they worked. They came off because publishing them
+ * as browsable navigation amounts to telling a visitor which powder to take for
+ * a health condition, and Ayusya is a food business, not a clinical one. A
+ * filter rail is an implicit recommendation; a dried vegetable is not a remedy.
+ *
+ * `categories[]` is still matched by the free-text search below. Someone who
+ * types "digestion" volunteered the word and should find something; the
+ * objection is to offering the taxonomy as a menu, not to honouring a query.
+ * The fields themselves stay in productData.ts — they cost nothing unused, and
+ * deleting them across 21 products is unrelated risk.
  * ────────────────────────────────────────────────────────────────────────────
  */
 
@@ -47,36 +57,34 @@ const SORT_LABELS: Record<SortOption, string> = {
   newest: "Newest first",
 };
 
-/** Families that actually have products, in the canonical display order. */
-const FAMILIES = FAMILY_LABELS.filter((f) =>
-  productData.some((p) => skuStyle(p.name).family === f.value)
-);
-
 /**
- * Use cases, derived from `categories[]` and ordered by how many products carry
- * them. Singletons are dropped: a badge that narrows 21 products down to 1 is a
- * worse affordance than search, and there are seven of them in the data.
+ * Categories, with the products in each one named.
+ *
+ * Now that this is the only filter, a bare label is not enough — "Roots & Tubers"
+ * does not tell anyone whether it holds the ginger they came for. So each family
+ * carries its count and the short names of what is in it, both derived from the
+ * catalogue. A visitor can read the whole range off the rail without pressing
+ * anything, which is the detail the rail lost when two filters came off.
+ *
+ * Empty families are dropped rather than rendered disabled: every family in
+ * FAMILY_LABELS currently has products, but that is a fact about today's data,
+ * not a guarantee.
  */
-const USE_CASES = Object.entries(
-  productData.reduce<Record<string, number>>((counts, product) => {
-    product.categories.forEach((c) => {
-      counts[c] = (counts[c] ?? 0) + 1;
-    });
-    return counts;
-  }, {})
-)
-  .filter(([, count]) => count > 1)
-  .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
-  .map(([label]) => label);
+const FAMILIES = FAMILY_LABELS.map(({ value, label }) => {
+  const members = productData
+    /* Short names: every SKU is "<Ingredient> Powder", so the suffix repeated 21
+       times is noise here. Sliced off rather than stored separately — one source
+       of truth for the name, in productData. */
+    .filter((p) => skuStyle(p.name).family === value)
+    .map((p) => p.name.replace(/ Powder$/, ""))
+    .sort((a, b) => a.localeCompare(b));
 
-/** Who it's for — the `forAges` field, which nothing read until now. */
-const AGES = Array.from(new Set(productData.flatMap((p) => p.forAges))).sort();
+  return { value, label, count: members.length, members };
+}).filter((f) => f.count > 0);
 
 const Products = () => {
   const [query, setQuery] = useState("");
   const [family, setFamily] = useState<ProductFamily | null>(null);
-  const [useCase, setUseCase] = useState<string | null>(null);
-  const [age, setAge] = useState<string | null>(null);
   const [sort, setSort] = useState<SortOption>("az");
   const [showFilters, setShowFilters] = useState(false);
 
@@ -89,8 +97,6 @@ const Products = () => {
 
     const result = productData.filter((product) => {
       if (family && skuStyle(product.name).family !== family) return false;
-      if (useCase && !product.categories.includes(useCase)) return false;
-      if (age && !product.forAges.includes(age)) return false;
       if (!q) return true;
       return (
         product.name.toLowerCase().includes(q) ||
@@ -121,22 +127,24 @@ const Products = () => {
       default:
         return result.sort(byName);
     }
-  }, [query, family, useCase, age, sort]);
+  }, [query, family, sort]);
 
-  const activeCount = [family, useCase, age, query.trim() || null].filter(Boolean).length;
+  const activeCount = [family, query.trim() || null].filter(Boolean).length;
 
   const clearAll = () => {
     setQuery("");
     setFamily(null);
-    setUseCase(null);
-    setAge(null);
     setSort("az");
   };
 
-  /** One pill, one look — shared by all three filter groups. */
+  /**
+   * One category row. A rounded rectangle rather than the pill this used to be:
+   * a two-line block with a count needs corners, and a fully-rounded 60px-tall
+   * capsule reads as a button that has swallowed a paragraph.
+   */
   const pill = (selected: boolean) =>
     cn(
-      "rounded-full border px-3.5 py-1.5 text-xs font-semibold transition-colors md:text-sm",
+      "block w-full rounded-2xl border px-4 py-2.5 text-left text-sm transition-colors",
       "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
       selected
         ? "border-primary bg-primary text-primary-foreground"
@@ -210,54 +218,48 @@ const Products = () => {
                   </div>
                 </div>
 
+                {/* Stacked rows rather than a wrap of pills: each row carries a
+                    count and its contents, which needs the full width. The rail
+                    is 256px, so "Spices & Aromatics · 5" plus five names cannot
+                    sit beside anything. */}
                 <fieldset>
                   <legend className="eyebrow">Category</legend>
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    {FAMILIES.map(({ value, label }) => (
-                      <button
-                        key={value}
-                        type="button"
-                        aria-pressed={family === value}
-                        onClick={() => setFamily(family === value ? null : value)}
-                        className={pill(family === value)}
-                      >
-                        {label}
-                      </button>
-                    ))}
-                  </div>
-                </fieldset>
-
-                <fieldset>
-                  <legend className="eyebrow">Use case</legend>
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    {USE_CASES.map((label) => (
-                      <button
-                        key={label}
-                        type="button"
-                        aria-pressed={useCase === label}
-                        onClick={() => setUseCase(useCase === label ? null : label)}
-                        className={pill(useCase === label)}
-                      >
-                        {label}
-                      </button>
-                    ))}
-                  </div>
-                </fieldset>
-
-                <fieldset>
-                  <legend className="eyebrow">Who it&apos;s for</legend>
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    {AGES.map((label) => (
-                      <button
-                        key={label}
-                        type="button"
-                        aria-pressed={age === label}
-                        onClick={() => setAge(age === label ? null : label)}
-                        className={pill(age === label)}
-                      >
-                        {label}
-                      </button>
-                    ))}
+                  <div className="mt-3 space-y-1.5">
+                    {FAMILIES.map(({ value, label, count, members }) => {
+                      const selected = family === value;
+                      return (
+                        <button
+                          key={value}
+                          type="button"
+                          aria-pressed={selected}
+                          onClick={() => setFamily(selected ? null : value)}
+                          className={pill(selected)}
+                        >
+                          <span className="flex items-baseline justify-between gap-2">
+                            <span className="font-display font-bold">{label}</span>
+                            {/* "5 products" in full, not a bare "5": on its own
+                                the numeral concatenates with the label in the
+                                text layer — "Leafy Greens5" to a screen reader. */}
+                            <span
+                              className={cn(
+                                "shrink-0 text-xs tabular-nums",
+                                selected ? "text-primary-foreground/75" : "text-umber-light"
+                              )}
+                            >
+                              {count} {count === 1 ? "product" : "products"}
+                            </span>
+                          </span>
+                          <span
+                            className={cn(
+                              "mt-1 block text-left text-xs font-normal leading-snug",
+                              selected ? "text-primary-foreground/80" : "text-umber-light"
+                            )}
+                          >
+                            {members.join(", ")}
+                          </span>
+                        </button>
+                      );
+                    })}
                   </div>
                 </fieldset>
 
@@ -346,14 +348,14 @@ const Products = () => {
               ) : (
                 <div className="rounded-3xl border border-dashed border-caramel/60 bg-cream-50 px-6 py-20 text-center">
                   <p className="font-display text-xl font-semibold text-primary">
-                    Nothing matches that combination.
+                    Nothing matches that.
                   </p>
                   <p className="mt-3 text-sm text-umber-light">
-                    Try one filter at a time, or ask us directly — we&apos;ll tell
-                    you what fits.
+                    Try a shorter search, or ask us directly — we&apos;ll tell you
+                    what fits.
                   </p>
                   <button type="button" onClick={clearAll} className="ayusya-btn mt-7">
-                    Clear all filters
+                    Clear the search
                   </button>
                 </div>
               )}
@@ -365,9 +367,9 @@ const Products = () => {
                   first.
                 </h2>
                 <p className="mt-4 max-w-xl text-sm leading-relaxed text-umber-light md:text-base">
-                  There is no cart and no checkout here — every order starts as a
-                  conversation on WhatsApp, which is also where to ask about bulk
-                  and B2B quantities.
+                  Add what you want to your list and send it to us in one message —
+                  we confirm availability and pricing on WhatsApp, which is also
+                  where to ask about bulk and B2B quantities.
                 </p>
                 <ChapterCTA
                   lead="whatsapp"

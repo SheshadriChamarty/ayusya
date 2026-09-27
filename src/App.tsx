@@ -6,7 +6,9 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import CTARail from "./components/CTARail";
+import CartPanel from "./components/CartPanel";
 import ScrollToTop from "./components/ScrollToTop";
+import { CartProvider } from "./hooks/useCart";
 
 /*
  * Index stays eagerly imported — it is the entry point for almost every
@@ -36,24 +38,32 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
-        <ScrollToTop />
-        <Suspense fallback={<RouteFallback />}>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/products" element={<Products />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/solar-advantage" element={<SolarAdvantage />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/hero-options" element={<HeroOptions />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </Suspense>
-        {/* Outside <Routes> so the rail persists across navigation instead of
-            remounting — and so every future route inherits it for free. */}
-        <CTARail />
-      </BrowserRouter>
+      {/* CartProvider wraps the router rather than sitting inside a page, because
+          the badge has to survive navigation — a provider mounted per route would
+          reset the list on every click. */}
+      <CartProvider>
+        <BrowserRouter>
+          <ScrollToTop />
+          <Suspense fallback={<RouteFallback />}>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/products" element={<Products />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/solar-advantage" element={<SolarAdvantage />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/hero-options" element={<HeroOptions />} />
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Suspense>
+          {/* Outside <Routes> so the rail persists across navigation instead of
+              remounting — and so every future route inherits it for free. */}
+          <CTARail />
+          {/* One panel for the whole app. Inside the router because its empty
+              state links to /products. */}
+          <CartPanel />
+        </BrowserRouter>
+      </CartProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );
