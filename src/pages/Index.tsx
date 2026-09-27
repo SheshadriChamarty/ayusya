@@ -2,7 +2,6 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import StoryProgress from "@/components/story/StoryProgress";
 import Hero from "@/components/story/Hero";
-import HeroSwitcher from "@/components/story/HeroSwitcher";
 import Wish from "@/components/story/chapters/01Wish";
 import Loss from "@/components/story/chapters/02Loss";
 import Farm from "@/components/story/chapters/03Farm";
@@ -40,9 +39,6 @@ const Index = () => (
       <Shelf />
     </main>
     <Footer />
-    {/* Dev-only: renders null in a production build. Lets the hero photograph be
-        compared in the real page rather than in screenshots. */}
-    <HeroSwitcher />
   </div>
 );
 

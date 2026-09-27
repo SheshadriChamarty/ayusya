@@ -65,8 +65,8 @@ const CartContext = createContext<CartContextValue | null>(null);
 /**
  * Read the stored list.
  *
- * Guarded the same way `readStoredHeroChoice` in story/HeroSwitcher.tsx is: in
- * Safari private mode *touching* localStorage throws rather than returning null.
+ * Guarded for Safari private mode, where *touching* localStorage throws rather
+ * than returning null.
  * Additionally validated shape-by-shape — this value survives deploys, so a
  * stored list written by an older version of the site must not be able to crash
  * the drawer. Anything unrecognised is discarded rather than repaired.

@@ -1,10 +1,14 @@
 /**
  * The candidate hero photographs, and which one opens the site.
  *
- * This is a list rather than a single constant because the hero was the one
+ * The decision is made: the bamboo trays, locked by the owner. See the note on
+ * `HERO` at the bottom of this file before touching it.
+ *
+ * This is still a list rather than a single constant because the hero was the one
  * decision judged by looking, not by argument — so the options that were seriously
- * considered stay in the codebase with the reasoning attached, and switching is a
- * one-word change (or, in development, a click — see HeroSwitcher).
+ * considered stay in the codebase with the reasoning attached, for the
+ * /hero-options review board and for whoever revisits the choice. Only `HERO`
+ * reaches the live page.
  *
  * Each option carries its own focal point, because the crop is part of the choice.
  * Swapping the file without swapping the focal point is exactly how a hero silently
@@ -27,9 +31,9 @@
  * *opacity of the mid stop* — the gradient shape itself is fixed in Hero.tsx.
  */
 export interface HeroOption {
-  /** Stable key, also the value persisted by the dev switcher. */
+  /** Stable key, and the value DEFAULT_HERO_ID points at. */
   id: string;
-  /** Short label for the switcher UI. */
+  /** Short label for the /hero-options board. */
   label: string;
   /** Path without width or extension — see Photo.tsx for the naming convention. */
   base: string;
@@ -154,20 +158,36 @@ export const HERO_OPTIONS: HeroOption[] = [
 ];
 
 /**
- * The shipped default.
+ * ⚠️ OWNER-LOCKED. The bamboo trays, and nothing else.
  *
- * Change this id to change the site. The dev-only switcher overrides it in the
- * browser for comparison, but never writes here — a production build always
- * renders exactly this option.
+ * Chosen by the owner, in these words: "That's the only one allowed. Keep it and
+ * stick to that. Don't change that image." So this is not a default awaiting a
+ * decision — it *is* the decision, and it is the one entry in this file that is
+ * not up for discussion. Do not swap it for a frame that scores better on scrim
+ * contrast, palette fit or file size. It was picked by eye, which outranks all
+ * three.
  *
- * Currently the steel-rack frame, because it is the only candidate that matches the
- * structure Ayusya actually dries on. It is a placeholder for a real decision, not
- * the decision — and the honest fix is a photograph of the actual terrace, which
- * would end this file.
+ * It is also no longer overridable at runtime. Hero.tsx used to resolve the photo
+ * through `?hero=` and then `localStorage["ayusya:hero"]` before reaching this
+ * constant, which meant any browser that had ever touched the dev picker kept
+ * showing its own choice and ignored whatever shipped here — the exact reason the
+ * chosen photo appeared to have been "removed". Both override paths are gone;
+ * Hero.tsx reads `HERO` below and has no other input.
+ *
+ * The rest of HERO_OPTIONS stays for the /hero-options review board. Nothing is
+ * deleted: all six photographs are still in public/assets/photos/.
  */
-export const DEFAULT_HERO_ID = "steelracks";
+export const DEFAULT_HERO_ID = "trays";
 
 export const heroById = (id: string | null | undefined): HeroOption =>
   HERO_OPTIONS.find((o) => o.id === id) ??
   HERO_OPTIONS.find((o) => o.id === DEFAULT_HERO_ID) ??
   HERO_OPTIONS[0];
+
+/**
+ * The photograph the site opens with — resolved once, at module scope.
+ *
+ * A constant rather than a hook, so there is exactly one way for the hero to be
+ * anything other than the bamboo trays: editing the line above.
+ */
+export const HERO = heroById(DEFAULT_HERO_ID);

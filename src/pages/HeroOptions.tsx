@@ -1,26 +1,26 @@
-import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Photo from "@/components/Photo";
 import { HERO_OPTIONS, DEFAULT_HERO_ID } from "@/components/story/heroOptions";
 
 /**
- * A side-by-side board of every hero photograph under consideration.
+ * A side-by-side board of the hero photographs that were considered.
  *
- * This exists to be *shared*. The dev-only HeroSwitcher solves comparison for
- * whoever is running the dev server, but it cannot solve "send this to someone for
- * feedback" — localhost does not reach another person, and a switcher that vanishes
- * in a production build reaches them least of all.
+ * ── This is now a record, not a chooser ─────────────────────────────────────
+ * The decision is made — the bamboo trays, locked by the owner — so the cards no
+ * longer link to `/?hero=<id>`. They can't: the hero is a module constant and the
+ * `?hero=` param is not read any more. Leaving the links in place would have been
+ * the worse option, because a link that navigates and changes nothing is exactly
+ * how the original confusion happened. The board stays because the reasoning
+ * behind each candidate is worth keeping next to the assets.
+ * ───────────────────────────────────────────────────────────────────────────
  *
- * So this is a real route that survives the build. Each option renders under the
- * actual scrim and the actual headline, at the real aspect ratio, because the only
- * question that matters is whether the type still reads on it — which a raw
- * thumbnail cannot answer. Every card links to the live homepage with that option
- * applied via `?hero=`, so a reviewer can see any candidate full-size in context.
+ * Each option renders under the actual scrim and the actual headline, at the real
+ * aspect ratio, because the only question that mattered was whether the type still
+ * reads on it — which a raw thumbnail cannot answer.
  *
- * It is deliberately not in the navbar. It is a working document for a decision in
- * progress, not part of the story, and it should be deleted once the hero is
- * settled — at which point heroOptions.ts collapses to the one chosen entry.
+ * It is deliberately not in the navbar, and it can be deleted whenever the record
+ * stops being useful; at that point heroOptions.ts collapses to the one entry.
  */
 const HeroOptions = () => (
   <div className="flex min-h-screen flex-col">
@@ -31,14 +31,14 @@ const HeroOptions = () => (
         <p className="eyebrow">Working document</p>
         <h1 className="heading-lg mt-3 text-primary">Hero photo options</h1>
         <p className="paragraph mt-5 max-w-2xl">
-          {HERO_OPTIONS.length} candidates for the photograph that opens the site.
-          Each is shown under the real headline and the real gradient, because the
-          only question that matters is whether the words still read on it.
+          The {HERO_OPTIONS.length} candidates for the photograph that opens the
+          site, each shown under the real headline and the real gradient. The
+          bamboo trays were chosen and are live on the homepage; the rest are kept
+          here as a record of what was considered and why.
         </p>
         <p className="mt-4 max-w-2xl text-base leading-relaxed text-umber-light">
           Every image is from Pexels under a licence that allows commercial use with
-          no attribution required. Tap any card to see it full-size on the live
-          homepage.
+          no attribution required.
         </p>
 
         <ul className="mt-12 grid gap-10 lg:grid-cols-2">
@@ -51,11 +51,7 @@ const HeroOptions = () => (
                  * would answer the wrong question — every one of these looks good as
                  * a photograph, and the differences only appear under type.
                  */}
-                <Link
-                  to={`/?hero=${o.id}`}
-                  className="relative isolate block aspect-[16/10] overflow-hidden"
-                  aria-label={`Open the homepage with the ${o.label} photo`}
-                >
+                <div className="relative isolate block aspect-[16/10] overflow-hidden">
                   <Photo
                     base={o.base}
                     alt={o.alt}
@@ -85,7 +81,7 @@ const HeroOptions = () => (
                       We just don&apos;t get in its way.
                     </p>
                   </div>
-                </Link>
+                </div>
 
                 <div className="p-5 md:p-6">
                   <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
@@ -93,20 +89,13 @@ const HeroOptions = () => (
                       {i + 1}. {o.label}
                     </h2>
                     {o.id === DEFAULT_HERO_ID && (
-                      <span className="rounded-full bg-caramel/30 px-2.5 py-0.5 font-display text-[0.7rem] font-bold uppercase tracking-wider text-bronze">
-                        Current
+                      <span className="rounded-full bg-primary px-2.5 py-0.5 font-display text-[0.7rem] font-bold uppercase tracking-wider text-primary-foreground">
+                        Chosen — live on the site
                       </span>
                     )}
                   </div>
 
                   <p className="mt-3 text-base leading-relaxed text-umber">{o.note}</p>
-
-                  <Link
-                    to={`/?hero=${o.id}`}
-                    className="mt-5 inline-flex items-center gap-2 font-display text-base font-bold text-bronze underline decoration-caramel-dark decoration-2 underline-offset-4 hover:decoration-bronze"
-                  >
-                    See it full-size
-                  </Link>
                 </div>
               </article>
             </li>
@@ -127,8 +116,9 @@ const HeroOptions = () => (
         </p>
 
         <p className="mt-6 max-w-2xl rounded-2xl border border-bronze/20 bg-cream p-5 text-base leading-relaxed text-umber">
-          <strong className="font-semibold text-bronze">To choose one:</strong> note
-          its number. Switching the live site is a one-line change —{" "}
+          <strong className="font-semibold text-bronze">The hero is settled:</strong>{" "}
+          the bamboo trays, chosen by the owner and fixed in code. It is no longer
+          switchable from the browser — the one place it can change is{" "}
           <code className="text-bronze">DEFAULT_HERO_ID</code> in{" "}
           <code className="text-bronze">heroOptions.ts</code>.
         </p>

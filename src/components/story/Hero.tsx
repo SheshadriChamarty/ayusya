@@ -1,11 +1,9 @@
 import { ArrowDown } from "lucide-react";
-import { useSearchParams } from "react-router-dom";
 import Photo from "@/components/Photo";
 import Sun from "@/components/illustrations/Sun";
 import { cn } from "@/lib/utils";
 import ChapterCTA from "./ChapterCTA";
-import { heroById } from "./heroOptions";
-import { readStoredHeroChoice } from "./HeroSwitcher";
+import { HERO } from "./heroOptions";
 
 /* tailwind.config.ts `bronze.DEFAULT`. Duplicated as a literal because this
    gradient is built in JS, where a Tailwind class name is not available. */
@@ -23,35 +21,26 @@ const BRONZE = "#451B03";
  * lane and its numeral seal, and the hero is not a chapter — the thread should
  * begin at ① The Wish, below this, where the story actually starts.
  *
- * Whichever photograph is selected below, it is real solar drying — Ayusya's own
- * process, not a stock bowl of wellness powder. The subject does the selling; the
- * type only has to name it.
- */
-
-/**
- * The opening photograph, resolved per render from the URL.
+ * The photograph is the bamboo trays, and it is fixed — see the lock note on
+ * `HERO` in heroOptions.ts. It is real solar drying, Ayusya's own process, not a
+ * stock bowl of wellness powder. The subject does the selling; the type only has
+ * to name it.
  *
- * `useSearchParams` rather than a module-scope constant, because /hero-options
- * links to `/?hero=<id>` and react-router navigates *without* a document reload —
- * a value captured at module scope would be stale for exactly the flow the picker
- * exists to support.
+ * ── Why there is no longer a runtime override ───────────────────────────────
+ * This used to resolve the photo per render: `?hero=` first, then the dev
+ * switcher's localStorage value, then the shipped default. That chain is why the
+ * owner's chosen photograph appeared to have gone missing — a browser that had
+ * ever used the picker kept serving its own stored choice and never reached the
+ * default, so the site shipped one photo and showed another on the one machine
+ * where it mattered. Both paths are gone; `HERO` is a module constant, so the
+ * hero has exactly one input and it is under version control.
  *
- * The cost of reading it during render is nil: `?hero=` is only ever present when
- * someone is comparing options. In a production visit there is no param and no
- * stored choice, so this resolves to DEFAULT_HERO_ID on the first render and the
- * hero `<img>` is in the very first paint with its final `src` — which is what
- * Photo.tsx's `priority` path depends on.
+ * A side benefit: the `<img>` is now in the very first paint with its final
+ * `src` and no hook runs before it, which is what Photo.tsx's `priority` path
+ * wants anyway.
+ * ───────────────────────────────────────────────────────────────────────────
  */
-const useHero = () => {
-  const [params] = useSearchParams();
-  /* The param wins so a choice can be shared as a link; localStorage (written by
-     the dev switcher) is the fallback; then the shipped default. */
-  return heroById(params.get("hero") ?? readStoredHeroChoice());
-};
-
 const Hero = () => {
-  const HERO = useHero();
-
   return (
   <section className="relative isolate flex min-h-[86svh] items-end overflow-hidden md:min-h-[92svh]">
     <Photo
