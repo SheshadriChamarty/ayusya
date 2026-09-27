@@ -1,110 +1,189 @@
-import React from 'react';
-import { Mail, Phone, Instagram, MapPin, Leaf } from 'lucide-react';
+import { Instagram, Mail, MapPin, MessageCircle, Phone } from "lucide-react";
+import CatalogueLink from "./CatalogueLink";
+import BronzeBadge from "./illustrations/BronzeBadge";
+import LeafMotif from "./illustrations/LeafMotif";
+import Reveal from "./story/Reveal";
+import ChapterCTA from "./story/ChapterCTA";
+import {
+  ADDRESS_FULL,
+  ADDRESS_SHORT,
+  COMPANY_NAME,
+  EMAIL,
+  FSSAI_LICENSE,
+  INSTAGRAM_HANDLE,
+  INSTAGRAM_URL,
+  PHONE_DISPLAY,
+  PHONE_TEL,
+  whatsappUrl,
+} from "@/lib/contact";
 
-const contactDetails = [
+/**
+ * The contact block.
+ *
+ * WhatsApp is listed first and styled as the primary route on purpose: it is the
+ * only channel that converts here, since there is no cart and no checkout. The
+ * other four exist so the business looks reachable, not because they are equal.
+ *
+ * This replaces the last of the four grey "Placeholder Visual" boxes and the last
+ * of the `ayusya-*` bridge classes — the migration alias block in
+ * tailwind.config.ts can now go.
+ */
+
+const CHANNELS = [
   {
-    label: 'Email Us',
-    value: 'ayusyaexp@gmail.com',
-    description: 'General & B2B inquiries',
-    link: 'mailto:ayusyaexp@gmail.com',
-    icon: Mail
+    label: "WhatsApp",
+    value: PHONE_DISPLAY,
+    description: "The fastest way to reach us — we reply here first",
+    link: whatsappUrl(),
+    icon: MessageCircle,
+    primary: true,
   },
   {
-    label: 'Call',
-    value: '8333832277',
-    description: 'Talk to our nutrition-focused team',
-    link: 'tel:+918333832277',
-    icon: Phone
+    label: "Email",
+    value: EMAIL,
+    description: "Retail, B2B and bulk enquiries",
+    link: `mailto:${EMAIL}`,
+    icon: Mail,
   },
   {
-    label: 'Social',
-    value: '@ayusya_smartnutrition',
-    description: 'Daily solar-powered goodness',
-    link: 'https://instagram.com/ayusya_smartnutrition',
-    icon: Instagram
+    label: "Call",
+    value: PHONE_DISPLAY,
+    description: "If you would rather just talk it through",
+    link: `tel:${PHONE_TEL}`,
+    icon: Phone,
   },
   {
-    label: 'Location',
-    value: 'Ayusya Foods Industry · India',
-    description: 'Rooted in local farms, serving globally',
+    label: "Instagram",
+    value: `@${INSTAGRAM_HANDLE}`,
+    description: "What came out of the tunnel this week",
+    link: INSTAGRAM_URL,
+    icon: Instagram,
+  },
+  {
+    label: "Where we are",
+    value: COMPANY_NAME,
+    description: ADDRESS_SHORT,
     link: undefined,
-    icon: MapPin
-  }
+    icon: MapPin,
+  },
 ];
 
-const ContactSection: React.FC = () => {
-  return (
-    <section id="contact" className="section-padding bg-gradient-to-br from-ayusya-lightGreen via-white to-amber-50">
-      <div className="container mx-auto">
-        <div className="grid gap-8 lg:grid-cols-2">
-          <div className="space-y-6 rounded-[32px] border border-amber-100 bg-white/90 p-8 shadow-lg">
-            <p className="text-sm uppercase tracking-[0.4em] text-amber-700">Contact Us</p>
-            <h2 className="heading-lg text-ayusya-brown">Let&apos;s Build Smart, Healthy Lives Together</h2>
-            <p className="text-gray-700">
-              Whether you&apos;re sourcing for retail shelves, wellness programs, or your family pantry, AYUSYA Foods Industry is
-              ready to tailor solar-crafted solutions for you.
+const ContactSection = () => (
+  <section id="contact" className="relative overflow-x-clip bg-cream-100">
+    <div className="pointer-events-none absolute -bottom-12 -left-8 h-56 w-40 text-sku-moringa/12 md:h-72 md:w-52">
+      <LeafMotif animate />
+    </div>
+
+    <div className="container relative z-10 mx-auto px-5 py-20 md:px-8 md:py-28">
+      <div className="grid gap-10 lg:grid-cols-[1fr_1.1fr] lg:gap-14">
+        <div>
+          <Reveal>
+            <p className="eyebrow mb-4">Talk to us</p>
+            <h2 className="heading-lg max-w-xl">
+              There is no checkout here. There is a conversation.
+            </h2>
+          </Reveal>
+
+          <Reveal delay={0.1}>
+            <p className="paragraph mt-7 max-w-lg">
+              Whether you are stocking a shelf, running a wellness programme, or
+              just filling your own pantry — tell us what you need and we will tell
+              you what we have, what it costs and when it can reach you.
             </p>
-            <div className="rounded-2xl border border-emerald-400/40 bg-emerald-50/70 p-6 text-emerald-900 flex items-center gap-4">
-              <Leaf className="h-10 w-10 text-emerald-600" />
-              <div>
-                <p className="text-sm uppercase tracking-[0.3em] text-emerald-700">Closing Motto</p>
-                <p className="text-lg font-serif">Live Better. Feel Stronger. Thrive Every Day.</p>
-              </div>
+          </Reveal>
+
+          <Reveal delay={0.16}>
+            <ChapterCTA lead="whatsapp" whatsappLabel="Message us on WhatsApp" />
+          </Reveal>
+
+          <Reveal delay={0.22}>
+            <div className="mt-12 grid grid-cols-2 gap-6 sm:grid-cols-4 lg:grid-cols-2 lg:gap-8">
+              {[
+                { label: "Solar Dried", value: "100%" },
+                { label: "No Additives", value: "0" },
+                { label: "Made in Gudivada" },
+                { label: "FSSAI Certified" },
+              ].map((badge) => (
+                <div key={badge.label} className="mx-auto h-24 w-24 text-bronze md:h-28 md:w-28">
+                  <BronzeBadge label={badge.label} value={badge.value} />
+                </div>
+              ))}
             </div>
-            <div className="rounded-2xl border border-dashed border-amber-300 bg-amber-50/60 p-4 text-center text-sm uppercase tracking-[0.3em] text-amber-800">
-              Placeholder Visual
-            </div>
-          </div>
+          </Reveal>
 
-          <div className="space-y-4">
-            {contactDetails.map(({ label, value, description, link, icon: Icon }) => {
-              const cardClasses =
-                'flex flex-col gap-2 rounded-2xl border border-amber-100 bg-white/90 p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-md';
+          <Reveal delay={0.28}>
+            <p className="script-accent mt-12 text-2xl md:text-3xl">
+              Live better. Feel stronger. Thrive every day.
+            </p>
+          </Reveal>
+        </div>
 
-              if (link) {
-                const isExternal = link.startsWith('http');
-                return (
-                  <a
-                    key={label}
-                    href={link}
-                    target={isExternal ? '_blank' : undefined}
-                    rel={isExternal ? 'noreferrer' : undefined}
-                    className={cardClasses}
-                  >
-                    <div className="flex items-center gap-3">
-                      <span className="rounded-full bg-ayusya-green/15 p-2 text-ayusya-brown">
-                        <Icon className="h-5 w-5" />
-                      </span>
-                      <p className="text-xs uppercase tracking-[0.3em] text-amber-700">{label}</p>
-                    </div>
-                    <p className="text-lg font-semibold text-ayusya-brown">{value}</p>
-                    <p className="text-sm text-gray-600">{description}</p>
-                  </a>
-                );
-              }
+        <div className="space-y-4">
+          {CHANNELS.map(({ label, value, description, link, icon: Icon, primary }) => {
+            const card = (
+              <>
+                <div className="flex items-center gap-3">
+                  <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-primary/10 text-primary">
+                    <Icon size={17} aria-hidden="true" />
+                  </span>
+                  <p className="eyebrow">{label}</p>
+                </div>
+                <p className="mt-3 font-display text-lg font-semibold text-primary">
+                  {value}
+                </p>
+                <p className="mt-1 text-sm text-umber-light">{description}</p>
+              </>
+            );
 
+            const shell = [
+              "block rounded-3xl border bg-cream-50 p-6 shadow-warm transition-all duration-300",
+              primary
+                ? "border-primary/50 ring-1 ring-primary/20"
+                : "border-caramel/40",
+              link && "hover:-translate-y-1 hover:border-primary hover:shadow-warm-lg",
+            ]
+              .filter(Boolean)
+              .join(" ");
+
+            if (!link) {
               return (
-                <div key={label} className={cardClasses}>
-                  <div className="flex items-center gap-3">
-                    <span className="rounded-full bg-ayusya-green/15 p-2 text-ayusya-brown">
-                      <Icon className="h-5 w-5" />
-                    </span>
-                    <p className="text-xs uppercase tracking-[0.3em] text-amber-700">{label}</p>
-                  </div>
-                  <p className="text-lg font-semibold text-ayusya-brown">{value}</p>
-                  <p className="text-sm text-gray-600">{description}</p>
+                <div key={label} className={shell}>
+                  {card}
+                  <address className="mt-4 border-t border-caramel/30 pt-4 text-sm not-italic leading-relaxed text-umber">
+                    {ADDRESS_FULL}
+                  </address>
+                  <p className="mt-3 text-xs text-umber-light">
+                    FSSAI Central Licence {FSSAI_LICENSE}
+                  </p>
                 </div>
               );
-            })}
-            <div className="rounded-[28px] border border-amber-200 bg-gradient-to-r from-amber-50 to-green-50 p-6 text-center text-sm text-amber-900">
-              Prefer a detailed catalogue or samples? Drop us a note—we respond within 24 hours with customized options.
-            </div>
+            }
+
+            const isExternal = link.startsWith("http");
+            return (
+              <a
+                key={label}
+                href={link}
+                target={isExternal ? "_blank" : undefined}
+                rel={isExternal ? "noreferrer noopener" : undefined}
+                className={shell}
+              >
+                {card}
+              </a>
+            );
+          })}
+
+          <div className="rounded-3xl border border-dashed border-caramel/60 bg-cream-50 p-6 text-center">
+            <p className="text-sm leading-relaxed text-umber-light">
+              Want the whole range on paper? The catalogue has every product, with
+              benefits and usage.
+            </p>
+            <CatalogueLink variant="quiet" label="Open the catalogue" className="mt-4" />
           </div>
         </div>
       </div>
-    </section>
-  );
-};
+    </div>
+  </section>
+);
 
 export default ContactSection;
-

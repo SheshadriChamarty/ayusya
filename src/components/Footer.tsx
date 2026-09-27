@@ -1,93 +1,120 @@
-import React from "react";
 import { Link } from "react-router-dom";
+import { Instagram, Mail, MapPin, Phone } from "lucide-react";
+import {
+  ADDRESS_SHORT,
+  COMPANY_NAME,
+  EMAIL,
+  FSSAI_LICENSE,
+  INSTAGRAM_HANDLE,
+  INSTAGRAM_URL,
+  PHONE_DISPLAY,
+  PHONE_TEL,
+} from "@/lib/contact";
 
-const Footer: React.FC = () => {
+const exploreLinks = [
+  { label: "Home", href: "/" },
+  { label: "Our Story", href: "/about" },
+  { label: "The Sun", href: "/solar-advantage" },
+  { label: "Products", href: "/products" },
+  { label: "Contact", href: "/contact" },
+];
+
+const Footer = () => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-ayusya-cream/80 border-t border-amber-100">
-      <div className="container mx-auto px-4 py-10 grid gap-8 md:grid-cols-3">
-        <div className="space-y-3">
+    <footer className="border-t border-border bg-caramel-band text-bronze">
+      <div className="container mx-auto grid gap-10 px-5 py-14 md:grid-cols-3">
+        <div className="space-y-4">
           <div className="flex items-center gap-3">
             <img
-              src="/assets/ayusya-logo.png"
-              alt="Ayusya Logo"
-              className="h-12 w-auto"
+              src="/assets/logo-128.png"
+              alt=""
+              width={52}
+              height={52}
+              className="h-12 w-12 rounded-full object-contain"
             />
-            <div>
-              <p className="text-ayusya-brown font-serif text-xl leading-tight">
-                AYUSYA Foods Industry
-              </p>
-              <p className="text-xs uppercase tracking-[0.4em] text-amber-700">
-                Smart Food
-              </p>
-            </div>
+            <span className="flex flex-col leading-tight">
+              <span className="font-wordmark text-lg font-bold tracking-[0.16em]">
+                AYUSYA
+              </span>
+              <span className="text-[0.7rem] uppercase tracking-[0.3em] text-bronze/70">
+                Foods Industry
+              </span>
+            </span>
           </div>
-          <p className="text-sm text-gray-700">
-            Healing Begins Where Nature Whispers and Light Listens. Powered by
-            the sun, guided by a mother&apos;s wish.
+
+          {/* Campaign register — guidelines §7 reserves the poetic lines for
+              footers and taglines, away from functional copy. */}
+          <p className="font-script text-lg leading-snug text-bronze/90">
+            Healing begins where nature whispers and light listens.
+          </p>
+          <p className="text-sm text-bronze/75">
+            Powered by the sun, guided by a mother&apos;s wish.
           </p>
         </div>
 
-        <div className="space-y-2 text-sm text-gray-700">
-          <p className="font-semibold text-ayusya-brown uppercase tracking-[0.3em] text-xs">
-            Connect
-          </p>
-          <p>
-            Email:{" "}
-            <a
-              href="mailto:ayusyaexp@gmail.com"
-              className="text-amber-700 hover:underline"
-            >
-              ayusyaexp@gmail.com
-            </a>
-          </p>
-          <p>
-            Phone:{" "}
-            <a
-              href="tel:+918333832277"
-              className="text-amber-700 hover:underline"
-            >
-              8333832277
-            </a>
-          </p>
-          <p>
-            Social:{" "}
-            <a
-              href="https://instagram.com/ayusya_smartnutrition"
-              target="_blank"
-              rel="noreferrer"
-              className="text-amber-700 hover:underline"
-            >
-              @ayusya_smartnutrition
-            </a>
-          </p>
-          <p>Location: Ayusya Foods Industry · India</p>
+        <div className="space-y-3">
+          <p className="eyebrow text-bronze/70">Connect</p>
+          <ul className="space-y-2.5 text-sm">
+            <li>
+              <a
+                href={`mailto:${EMAIL}`}
+                className="inline-flex items-center gap-2 transition-opacity hover:opacity-70"
+              >
+                <Mail size={15} aria-hidden="true" />
+                {EMAIL}
+              </a>
+            </li>
+            <li>
+              <a
+                href={`tel:${PHONE_TEL}`}
+                className="inline-flex items-center gap-2 transition-opacity hover:opacity-70"
+              >
+                <Phone size={15} aria-hidden="true" />
+                {PHONE_DISPLAY}
+              </a>
+            </li>
+            <li>
+              <a
+                href={INSTAGRAM_URL}
+                target="_blank"
+                rel="noreferrer noopener"
+                className="inline-flex items-center gap-2 transition-opacity hover:opacity-70"
+              >
+                <Instagram size={15} aria-hidden="true" />@{INSTAGRAM_HANDLE}
+              </a>
+            </li>
+            <li className="inline-flex items-start gap-2">
+              <MapPin size={15} className="mt-0.5 shrink-0" aria-hidden="true" />
+              {ADDRESS_SHORT}
+            </li>
+          </ul>
         </div>
 
-        <div className="space-y-3 text-sm text-gray-700">
-          <p className="font-semibold text-ayusya-brown uppercase tracking-[0.3em] text-xs">
-            Explore
-          </p>
-          <div className="flex flex-col gap-2">
-            <Link to="/" className="hover:text-amber-700">
-              Home
-            </Link>
-            <Link to="/about" className="hover:text-amber-700">
-              Our Story
-            </Link>
-            <Link to="/products" className="hover:text-amber-700">
-              Products
-            </Link>
-            <Link to="/contact" className="hover:text-amber-700">
-              Contact
-            </Link>
-          </div>
+        <div className="space-y-3">
+          <p className="eyebrow text-bronze/70">Explore</p>
+          <nav className="flex flex-col gap-2 text-sm">
+            {exploreLinks.map((link) => (
+              <Link
+                key={link.label}
+                to={link.href}
+                className="transition-opacity hover:opacity-70"
+              >
+                {link.label}
+              </Link>
+            ))}
+          </nav>
         </div>
       </div>
-      <div className="border-t border-amber-100 py-4 text-center text-xs text-gray-500">
-        &copy; {currentYear} AYUSYA Foods Industry. Live Better. Feel Stronger.
-        Thrive Every Day.
+
+      {/* Extra bottom padding so the fixed CTARail never covers the FSSAI line. */}
+      <div className="border-t border-bronze/15 px-5 pb-24 pt-5 text-center text-xs text-bronze/70 md:pb-28">
+        <p>
+          &copy; {currentYear} {COMPANY_NAME}. Live Better. Feel Stronger. Thrive
+          Every Day.
+        </p>
+        <p className="mt-1.5">FSSAI Lic. No. {FSSAI_LICENSE} · Product of India</p>
       </div>
     </footer>
   );

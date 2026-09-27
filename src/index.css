@@ -1,192 +1,306 @@
-
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * Ayusya design tokens.
+ *
+ * The retail brand system (cream / caramel / bronze) is mapped onto shadcn's
+ * semantic variables rather than sitting alongside them, so all of the
+ * primitives in src/components/ui/ inherit the brand without being edited.
+ * Values are bare HSL channels — the Tailwind config supplies the hsl() wrapper.
+ *
+ * Hex equivalents, per Ayusya_Brand_Guidelines.md §3:
+ *   cream #FFE7B8 · caramel #D19F75 · bronze #451B03
+ *   umber #594838 · metallic #AD8A61
+ */
 @layer base {
   :root {
-    --background: 60 30% 96%;
-    --foreground: 20 12% 16%;
+    --background: 38 100% 86%;          /* cream  #FFE7B8 */
+    --foreground: 29 23% 28%;           /* umber  #594838 — never pure black */
 
-    --card: 60 30% 98%;
-    --card-foreground: 20 12% 16%;
+    --card: 39 100% 96%;                /* #FFF7E8, a lift off the cream ground */
+    --card-foreground: 29 23% 28%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 20 12% 16%;
+    --popover: 39 100% 96%;
+    --popover-foreground: 29 23% 28%;
 
-    --primary: 124 28% 50%;
-    --primary-foreground: 355 100% 100%;
+    --primary: 22 92% 14%;              /* bronze #451B03 */
+    --primary-foreground: 38 100% 86%;
 
-    --secondary: 60 20% 92%;
-    --secondary-foreground: 24 9% 22%;
+    --secondary: 38 100% 91%;           /* #FFEFD3 */
+    --secondary-foreground: 22 92% 14%;
 
-    --muted: 60 15% 92%;
-    --muted-foreground: 25 5% 45%;
+    --muted: 38 100% 91%;
+    /* Darkened from 42% to 34% lightness: at 42% this measured 3.6:1 on the cream
+       ground, and shadcn primitives use it for real sentence copy, not just hints. */
+    --muted-foreground: 29 20% 34%;
 
-    --accent: 84 46% 90%;
-    --accent-foreground: 24 9% 22%;
+    --accent: 27 50% 64%;               /* caramel #D19F75 */
+    --accent-foreground: 22 92% 14%;
 
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 355 100% 100%;
+    --destructive: 0 72% 42%;
+    --destructive-foreground: 39 100% 96%;
 
-    --border: 20 5% 90%;
-    --input: 20 5% 90%;
-    --ring: 124 28% 50%;
+    --border: 33 38% 82%;
+    --input: 33 38% 82%;
+    --ring: 27 50% 64%;
 
     --radius: 0.75rem;
+
+    /* Named brand channels, for gradients and SVG strokes. */
+    --cream: 38 100% 86%;
+    --caramel: 27 50% 64%;
+    --bronze: 22 92% 14%;
+    --umber: 29 23% 28%;
+    --metallic: 32 32% 53%;
+
+    /* Premium / corporate mode (guidelines §8) — scoped, never mixed with retail. */
+    --onyx: 0 2% 10%;
+    --gold-light: 32 95% 76%;
+    --gold-deep: 38 27% 42%;
+
+    /* The Golden Thread. Chapters retint this as the story progresses. */
+    --thread: 32 32% 53%;
+    --thread-width: 2px;
+
+    /* Referenced by ui/sidebar.tsx, previously undefined. */
+    --sidebar-background: 39 100% 96%;
+    --sidebar-foreground: 29 23% 28%;
+    --sidebar-primary: 22 92% 14%;
+    --sidebar-primary-foreground: 38 100% 86%;
+    --sidebar-accent: 38 100% 91%;
+    --sidebar-accent-foreground: 22 92% 14%;
+    --sidebar-border: 33 38% 82%;
+    --sidebar-ring: 27 50% 64%;
+
+    /* Referenced by ui/chart.tsx, previously undefined. Ingredient accents. */
+    --chart-1: 90 46% 31%;              /* moringa   */
+    --chart-2: 27 100% 46%;             /* carrot    */
+    --chart-3: 36 100% 45%;             /* banana    */
+    --chart-4: 340 93% 33%;             /* beetroot  */
+    --chart-5: 32 32% 53%;              /* metallic  */
   }
 
   * {
     @apply border-border;
   }
 
-  body {
-    @apply bg-background text-foreground font-sans;
-    overflow-x: hidden;
-  }
-
-  /* Enhanced scroll behavior */
   html {
     scroll-behavior: smooth;
   }
 
-  /* Custom utility classes */
+  body {
+    @apply bg-background text-foreground font-sans;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3, h4 {
+    @apply font-display text-primary;
+    font-weight: 700;
+  }
+}
+
+/*
+ * ── On contrast, measured rather than judged ─────────────────────────────────
+ * The brand's warm mid-tones were being used as *text* colours on the cream
+ * ground, and they do not survive it. Measured against #FFE7B8:
+ *
+ *   bronze         #451B03   12.31:1   ✓
+ *   bronze-light   #6B3410    8.18:1   ✓
+ *   umber          #594838    7.21:1   ✓
+ *   umber-light    #7A6650    4.52:1   ✓ (only just — captions only)
+ *   bronze-metallic #AD8A61   2.64:1   ✗  was .eyebrow, on every page
+ *   caramel-dark   #B8865C    2.63:1   ✗  was .script-accent and the tagline
+ *
+ * Those last two are under half the 4.5:1 AA threshold. They are metallic-ink
+ * colours: on a printed pouch real foil catches light and earns its contrast
+ * physically, but on a screen they are flat mid-tones with nowhere to hide. The
+ * hexes are not wrong — their use as type was. They stay, for rims and strokes.
+ *
+ * Rule from here: type on cream is bronze or umber. Nothing lighter.
+ * ────────────────────────────────────────────────────────────────────────────
+ */
+@layer components {
   .section-padding {
-    @apply py-16 px-4 md:py-24 md:px-6 lg:px-8;
+    @apply py-20 px-5 md:py-28 md:px-8 lg:px-12;
   }
-  
+
   .heading-xl {
-    @apply text-3xl md:text-4xl lg:text-5xl font-serif font-medium leading-tight;
+    @apply font-display text-[2.5rem] md:text-6xl lg:text-7xl font-extrabold leading-[1.05] tracking-tight;
   }
-  
+
   .heading-lg {
-    @apply text-2xl md:text-3xl font-serif font-medium leading-tight;
+    @apply font-display text-[2rem] md:text-5xl font-extrabold leading-[1.1] tracking-tight;
   }
-  
+
   .heading-md {
-    @apply text-xl md:text-2xl font-serif font-medium leading-tight;
+    @apply font-display text-2xl md:text-[2rem] font-bold leading-snug;
   }
-  
+
+  /* Small caps eyebrow above a heading — the packaging's section-label voice.
+     Bumped a step and taken to bold: at 0.2em tracking, uppercase text needs
+     weight to hold together, and 12px/600 in a 2.64:1 tone was the single most
+     illegible style on the site. */
+  .eyebrow {
+    @apply font-display text-sm md:text-base font-bold uppercase tracking-[0.14em] text-bronze;
+  }
+
+  /* Reserved for campaign taglines and chapter footers. Guidelines §7 keeps the
+     poetic register separate from functional copy. Script faces have thin strokes,
+     so this needs *more* contrast than body copy, not less. */
+  .script-accent {
+    @apply font-script text-bronze-light;
+  }
+
   .paragraph {
-    @apply text-base md:text-lg leading-relaxed;
+    @apply text-[1.0625rem] md:text-xl leading-relaxed text-umber;
   }
-  
-  /* Enhanced button classes with animations */
+
   .ayusya-btn {
-    @apply px-6 py-3 rounded-full bg-ayusya-green text-white hover:bg-opacity-90 transition-all duration-300 inline-flex items-center justify-center space-x-2 font-medium hover:shadow-md hover:translate-y-[-2px];
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-primary px-7 py-3.5
+           font-display font-semibold text-primary-foreground shadow-warm
+           transition-all duration-300 hover:-translate-y-0.5 hover:shadow-warm-lg
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring
+           focus-visible:ring-offset-2 focus-visible:ring-offset-background;
   }
-  
+
   .ayusya-btn-outline {
-    @apply px-6 py-3 rounded-full border-2 border-ayusya-green text-ayusya-green hover:bg-ayusya-green hover:text-white transition-all duration-300 inline-flex items-center justify-center space-x-2 font-medium hover:shadow-md hover:translate-y-[-2px];
+    @apply inline-flex items-center justify-center gap-2 rounded-full border-2 border-primary
+           bg-transparent px-7 py-3.5 font-display font-semibold text-primary
+           transition-all duration-300 hover:-translate-y-0.5 hover:bg-primary
+           hover:text-primary-foreground hover:shadow-warm
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring
+           focus-visible:ring-offset-2 focus-visible:ring-offset-background;
   }
-  
+
+  /*
+   * The primary button, inverted for a dark ground.
+   *
+   * .ayusya-btn fills with bg-primary — which is bronze, which is also what the
+   * hero scrim is made of. Measured on the hero: fill rgb(69,27,3) against a scrim
+   * of rgb(69,27,3). The cream label still read, so the text passed contrast while
+   * the *button* was invisible — no edge, no shape, just floating words.
+   *
+   * So on dark the figure/ground swap is total: cream fill, bronze ink. That keeps
+   * the visual hierarchy intact (this is still the heaviest element on the frame)
+   * and it is the strongest contrast the palette can produce against the scrim.
+   */
+  .ayusya-btn-light {
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-cream px-7 py-3.5
+           font-display font-bold text-bronze shadow-warm-lg
+           transition-all duration-300 hover:-translate-y-0.5 hover:bg-cream-100
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream
+           focus-visible:ring-offset-2 focus-visible:ring-offset-bronze;
+  }
+
+  /*
+   * The same secondary button, inverted for a dark ground.
+   *
+   * Not a modifier on .ayusya-btn-outline but a sibling, because every property
+   * that matters flips: the border, the ink, and what hover fills with. On the
+   * photographic hero the cream version measured as bronze-on-bronze — present in
+   * the DOM, invisible on screen. Cream at 1px reads thin over a busy photo, so
+   * this keeps the 2px border and adds a faint cream wash to separate it from
+   * whatever the image is doing underneath.
+   */
+  .ayusya-btn-outline-light {
+    @apply inline-flex items-center justify-center gap-2 rounded-full border-2 border-cream/70
+           bg-cream/10 px-7 py-3.5 font-display font-semibold text-cream backdrop-blur-sm
+           transition-all duration-300 hover:-translate-y-0.5 hover:border-cream hover:bg-cream
+           hover:text-bronze focus-visible:outline-none focus-visible:ring-2
+           focus-visible:ring-cream focus-visible:ring-offset-2 focus-visible:ring-offset-bronze;
+  }
+
+  /* Bronze line-art seal, matching the "Made in Gudivada" stamp treatment.
+     Guidelines §6: hand-drawn stamp feel, not a flat vector icon. */
+  .bronze-seal {
+    @apply relative grid place-items-center rounded-full border border-bronze/25
+           bg-cream-100 text-bronze shadow-seal;
+  }
+  .bronze-seal::after {
+    content: '';
+    @apply pointer-events-none absolute inset-[3px] rounded-full border border-bronze/15;
+  }
+
   .img-wrapper {
     @apply overflow-hidden rounded-2xl;
   }
-  
-  /* Enhanced product card styling with animations */
+
   .product-card {
-    @apply bg-white rounded-2xl overflow-hidden shadow-md transition-all duration-300;
-  }
-  
-  .section-title {
-    @apply relative inline-block pb-3 mb-8;
-  }
-  
-  .section-title:after {
-    content: '';
-    @apply absolute bottom-0 left-0 w-1/3 h-0.5 bg-ayusya-green;
+    @apply overflow-hidden rounded-2xl bg-card shadow-warm transition-all duration-300;
   }
 
-  /* Animation classes for buttons and links */
-  .btn-hover-effect {
-    @apply relative overflow-hidden;
+  /* Check-mark bullet. Guidelines §6 specifies check-marks, not dashes or dots. */
+  .check-list > li {
+    @apply relative pl-7;
   }
-
-  .btn-hover-effect:after {
-    content: '';
-    @apply absolute top-0 left-0 w-full h-full bg-white opacity-0 transition-opacity duration-300;
-  }
-
-  .btn-hover-effect:hover:after {
-    @apply opacity-20;
-  }
-
-  /* Ripple effect for buttons */
-  .ripple {
-    @apply relative overflow-hidden;
-  }
-
-  .ripple:after {
-    content: '';
-    @apply absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-0 h-0 bg-white rounded-full opacity-70 transition-all duration-500;
-  }
-
-  .ripple:active:after {
-    @apply w-[300%] h-[300%] opacity-0;
-  }
-
-  /* Animation for stagger children */
-  @for $i from 1 to 10 {
-    .stagger-children > *:nth-child(#{$i}) {
-      animation-delay: calc(#{$i} * 100ms);
-    }
-  }
-
-  /* Image hover effects */
-  .img-hover-zoom {
-    @apply overflow-hidden;
-  }
-
-  .img-hover-zoom img {
-    @apply transition-transform duration-700;
-  }
-
-  .img-hover-zoom:hover img {
-    @apply scale-110;
-  }
-
-  /* Scroll indicator animation */
-  .scroll-indicator {
-    @apply absolute bottom-8 left-1/2 transform -translate-x-1/2 w-6 h-10 border-2 border-ayusya-green rounded-full flex items-start justify-center;
-  }
-
-  .scroll-indicator:after {
-    content: '';
-    @apply w-1.5 h-1.5 bg-ayusya-green rounded-full mt-2 animate-bounce;
+  .check-list > li::before {
+    content: '✓';
+    @apply absolute left-0 top-0 font-display font-bold text-sku-moringa;
   }
 }
 
-/* Enhanced animations */
-@keyframes scale-in-center {
-  0% {
-    transform: scale(0.8);
-    opacity: 0;
+@layer utilities {
+  /* Per-SKU accent. Each product card sets --sku-accent on its root so the
+     glyph, name and hover state all derive from a single variable. */
+  .text-sku { color: var(--sku-accent, hsl(var(--primary))); }
+
+  /*
+   * The same accent, darkened enough to be *read* rather than just seen.
+   *
+   * Raw accents are pulled from the real colour of each ingredient, so the light
+   * ones — banana #E38C00, lemon #D9B310, garlic #B8A48F — land at 2.4–3.0:1 on a
+   * card and fail AA outright. Mixing 45% accent into bronze keeps the hue clearly
+   * identifiable while putting every one of the 21 SKUs between 5.35:1 and 6.85:1.
+   * Use .text-sku for shapes and glyphs; .text-sku-ink for anything with a glyph
+   * shape a reader has to resolve, like the ✓ bullets.
+   */
+  .text-sku-ink { color: color-mix(in srgb, var(--sku-accent, #451B03) 45%, #451B03); }
+  .bg-sku { background-color: var(--sku-accent, hsl(var(--primary))); }
+  .border-sku { border-color: var(--sku-accent, hsl(var(--primary))); }
+  .stroke-sku { stroke: var(--sku-accent, hsl(var(--primary))); }
+
+  /* Premium/corporate island. Guidelines §8: gold-on-onyx must not bleed into
+     the cream retail system, so it is scoped to an explicit container. */
+  .premium-mode {
+    --background: var(--onyx);
+    --foreground: var(--gold-light);
+    --primary: var(--gold-light);
+    --primary-foreground: var(--onyx);
+    --border: var(--gold-deep);
+    --muted-foreground: 38 27% 62%;
+    @apply bg-onyx text-gold-light;
   }
-  100% {
-    transform: scale(1);
-    opacity: 1;
+
+  .thread-stroke {
+    stroke: hsl(var(--thread));
+    stroke-width: var(--thread-width);
+    stroke-linecap: round;
+    fill: none;
   }
 }
 
-.animate-scale-in {
-  animation: scale-in-center 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
-}
-
-/* Shimmer loading effect */
-.shimmer {
-  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.5s infinite;
-}
-
-@keyframes shimmer {
-  0% {
-    background-position: 200% 0;
+/*
+ * Global reduced-motion gate.
+ *
+ * The site's narrative is carried by scroll-linked motion, so when a visitor
+ * asks for less of it every ambient loop and transition is cut here, and the
+ * JS side (useReducedMotionSafe) renders the thread fully drawn and static.
+ * Content must remain completely readable with all motion removed.
+ */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
   }
-  100% {
-    background-position: -200% 0;
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
