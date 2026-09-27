@@ -20,10 +20,6 @@ const About = lazy(() => import("./pages/About"));
 const SolarAdvantage = lazy(() => import("./pages/SolarAdvantage"));
 const Contact = lazy(() => import("./pages/Contact"));
 const NotFound = lazy(() => import("./pages/NotFound"));
-/* A working document for choosing the hero photograph, shareable for feedback.
-   Unlinked from the navbar on purpose — delete this route, /pages/HeroOptions.tsx
-   and the unused entries in heroOptions.ts once the hero is settled. */
-const HeroOptions = lazy(() => import("./pages/HeroOptions"));
 
 const queryClient = new QueryClient();
 
@@ -51,7 +47,6 @@ const App = () => (
               <Route path="/about" element={<About />} />
               <Route path="/solar-advantage" element={<SolarAdvantage />} />
               <Route path="/contact" element={<Contact />} />
-              <Route path="/hero-options" element={<HeroOptions />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>

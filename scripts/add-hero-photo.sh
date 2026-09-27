@@ -62,5 +62,5 @@ for pair in "1600 24" "800 34"; do
 done
 
 echo
-echo "Wired in? Not yet — uncomment the \"$NAME\" entry in"
-echo "src/components/story/heroOptions.ts, then open /hero-options."
+echo "Wired in? Not yet. The hero is owner-locked — read the lock note in"
+echo "src/components/story/heroOptions.ts before pointing HERO at these files."

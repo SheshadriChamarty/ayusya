@@ -86,13 +86,39 @@
     @apply border-border;
   }
 
+  /*
+   * Three defensive properties on the root. None of them fixes a bug observed on
+   * this site — they close off failure modes that are cheap to prevent here and
+   * awkward to diagnose later. Measured at 320–3440px with a forced 15px classic
+   * scrollbar: no horizontal scroll range, no uncovered canvas, sticky intact.
+   *
+   * `overflow-x: clip` guards on the scroll container rather than on `body`.
+   * `body { overflow-x: hidden }` only *clips* — the scroll container is `html`,
+   * so an overflowing child still creates a horizontal scroll range while body
+   * stops painting at the viewport edge. It must be `clip` and not `hidden`:
+   * `hidden` on the root makes `html` a scroll container, which breaks every
+   * `position: sticky` on the site (the navbar, chapter ④'s tunnel). `clip`
+   * creates no scroll container.
+   *
+   * `bg-background` on `html`, not just `body`, because the canvas takes its
+   * colour from the root element. With the colour on `body` alone, any area the
+   * body does not cover paints the browser default — white — against a cream
+   * palette that contains no white at all.
+   *
+   * `scrollbar-gutter: stable` keeps `100vw` and the layout width in agreement.
+   * Without it `100vw` includes the classic scrollbar's ~15px, so full-bleed
+   * layers and Hero's `sizes="100vw"` are sized slightly too wide. Invisible on
+   * macOS overlay scrollbars, which report a width of 0.
+   */
   html {
     scroll-behavior: smooth;
+    overflow-x: clip;
+    scrollbar-gutter: stable;
+    @apply bg-background;
   }
 
   body {
     @apply bg-background text-foreground font-sans;
-    overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
   }
 
