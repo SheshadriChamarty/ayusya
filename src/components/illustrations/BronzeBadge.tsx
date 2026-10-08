@@ -20,6 +20,19 @@ interface BronzeBadgeProps {
 const BronzeBadge = ({ label, value, className }: BronzeBadgeProps) => {
   const pathId = `seal-${label.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
 
+  /* The FSSAI mark is the official certificate artwork, not a drawn seal.
+     The file is a tall transparent PNG; object-cover in the square slot
+     crops the empty margin and keeps the wreath and ribbon in frame. */
+  if (label === "FSSAI Certified") {
+    return (
+      <img
+        src="/assets/fssai-logo.png"
+        alt="FSSAI Certified"
+        className={cn("h-full w-full object-cover object-center", className)}
+      />
+    );
+  }
+
   return (
     <svg
       viewBox="0 0 120 120"

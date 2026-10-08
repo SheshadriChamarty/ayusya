@@ -21,9 +21,8 @@ export const INSTAGRAM_URL = `https://instagram.com/${INSTAGRAM_HANDLE}`;
 export const COMPANY_NAME = "Ayusya Foods Industry";
 export const FOUNDER = "Prasanna Venigandla";
 
-/** FSSAI Central License. The pamphlet's 10125006000218 is a State license and
- *  should not be used on new material — see Ayusya_Brand_Guidelines.md §1. */
-export const FSSAI_LICENSE = "10125999000589";
+/** FSSAI licence number shown in the footer, contact block, and seal chapter. */
+export const FSSAI_LICENSE = "10125006000218";
 
 export const ADDRESS_SHORT = "Gudivada, Krishna District, Andhra Pradesh";
 export const ADDRESS_FULL =
