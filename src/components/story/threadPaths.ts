@@ -11,6 +11,9 @@
  *
  * `meaning` records what the line *is* in that chapter. It is the whole point of
  * using one element throughout: the thread never breaks, it only changes job.
+ *
+ * GoldenThread grows each segment as a creeper — leaves and tendrils unfurl off
+ * the stem as it draws — so the line reads as something alive the whole way down.
  */
 
 export interface ThreadSegment {
@@ -22,8 +25,11 @@ export interface ThreadSegment {
   meaning: string;
   /** Stroke colour for this stretch. Shifts warm as the story resolves. */
   stroke: string;
-  /** Dash gap in px. Only chapter ② frays; everywhere else the line is solid. */
-  frayed?: boolean;
+  /** Chapter ② only: the vine's leaves come in dry and hanging. The stem stays
+   *  solid — the thread never breaks, it only changes job. */
+  withered?: boolean;
+  /** Last segment only: the vine ends in a flower. */
+  bloom?: boolean;
 }
 
 export const THREAD: ThreadSegment[] = [
@@ -36,9 +42,9 @@ export const THREAD: ThreadSegment[] = [
   {
     id: "loss",
     d: "M30 0 C30 22 44 30 50 46 C58 66 66 78 72 100",
-    meaning: "The thread frays — what is grown and then lost",
+    meaning: "The vine withers — what is grown and then lost",
     stroke: "#7A6650",
-    frayed: true,
+    withered: true,
   },
   {
     id: "farm",
@@ -67,8 +73,9 @@ export const THREAD: ThreadSegment[] = [
   {
     id: "shelf",
     d: "M50 0 C50 30 50 48 50 66 C50 76 50 82 50 100",
-    meaning: "A shelf rule the products sit on",
+    meaning: "A shelf rule the products sit on, flowering at its end",
     stroke: "#AD8A61",
+    bloom: true,
   },
 ];
 
